@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 고려사이버대학교 · 주제별 이수 현황</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" as="style" crossorigin
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"
+        onerror="window.__xlsxFailed=true"></script>
+<style>
+  /* ===== Pulley Master Design Tokens (semantic) ===== */
+  :root{
+    --text-strong:#020207; --text-normal:#33354b; --text-sub:#6b6e84; --text-disable:#d1d3db;
+    --text-inverse:#ffffff; --text-success:#02a262; --text-danger:#e42939; --text-primary:#585aeb;
+    --fill-primary:#6d6dff; --fill-primary-weak:#e9e9ff; --fill-normal:#f9f9fb; --fill-hover:#f2f3f6;
+    --fill-press:#e5e6eb; --fill-muted:#e5e6eb; --fill-disable:#d1d3db;
+    --fill-success:#03b26c; --fill-success-weak:#e3f8ef;
+    --fill-danger:#e42939; --fill-danger-weak:#fde6e6;
+    --fill-warning:#fe9800; --fill-warning-weak:#fff2de;
+    --fill-accent:#3dc2ff; --fill-accent-weak:#ecf7fc;
+    --line-primary:#6d6dff; --line-normal:#e5e6eb; --line-danger:#e42939;
+    --bg-body:#ffffff; --bg-card:#f9f9fb;
+    --grey-5:#f9f9fb; --grey-10:#f2f3f6; --grey-20:#e5e6eb; --grey-30:#d1d3db;
+    --grey-60:#6b6e84; --grey-80:#33354b;
+    --radius-8:8px; --radius-10:10px; --radius-12:12px; --radius-16:16px; --radius-max:100px;
+    --shadow-card:0 1px 3px rgba(2,2,7,.06);
+    --shadow-raised:0 4px 16px rgba(2,2,7,.10);
+    --font:'Pretendard JP','Pretendard',-apple-system,system-ui,'Apple SD Gothic Neo',sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--bg-body);color:var(--text-normal);font-family:var(--font);
+    -webkit-font-smoothing:antialiased;line-height:1.5;}
+  body{min-height:100vh;}
+  .wrap{max-width:1600px;margin:0 auto;padding:24px 40px 80px;}
+  @media(max-width:767px){ .wrap{padding:16px 20px 64px;} }
+
+  /* ===== Header ===== */
+  header.top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    padding-bottom:20px;border-bottom:1px solid var(--line-normal);margin-bottom:24px;}
+  .title-block h1{font-size:28px;font-weight:700;color:var(--text-strong);letter-spacing:-.01em;}
+  @media(max-width:767px){ .title-block h1{font-size:22px;} }
+  .title-block .sub{margin-top:6px;font-size:14px;color:var(--text-sub);}
+  .update-block{display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
+  .update-info{font-size:13px;color:var(--text-sub);text-align:right;line-height:1.6;}
+  .update-info b{color:var(--text-normal);font-weight:600;}
+  .update-info .dot{display:inline-block;width:7px;height:7px;border-radius:50%;
+    background:var(--fill-success);margin-right:5px;vertical-align:middle;}
+  .update-info .dot.off{background:var(--fill-danger);}
+
+  /* ===== Buttons ===== */
+  .btn{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 16px;border:none;
+    border-radius:var(--radius-10);font-family:var(--font);font-size:14px;font-weight:600;
+    cursor:pointer;transition:filter .12s,background .12s;white-space:nowrap;}
+  .btn:hover{filter:brightness(.97);}
+  .btn:active{filter:brightness(.93);}
+  .btn-primary{background:var(--fill-primary);color:var(--text-inverse);}
+  .btn-line{background:#fff;color:var(--text-normal);border:1px solid var(--line-normal);}
+  .btn-weak{background:var(--fill-primary-weak);color:var(--text-primary);}
+  .btn:disabled{background:var(--fill-disable);color:#fff;cursor:not-allowed;filter:none;}
+
+  /* ===== Subject chips ===== */
+  .subjects{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+  .chip{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;
+    border-radius:var(--radius-max);border:1px solid var(--line-normal);background:#fff;
+    color:var(--text-sub);font-size:14px;font-weight:600;cursor:pointer;transition:all .12s;}
+  .chip:hover{background:var(--fill-hover);}
+  .chip.active{background:var(--fill-primary);color:#fff;border-color:var(--fill-primary);}
+  .chip.overview.active{background:var(--text-strong);border-color:var(--text-strong);}
+  .chip .cnt{font-size:12px;font-weight:600;padding:1px 7px;border-radius:var(--radius-max);
+    background:var(--fill-muted);color:var(--text-sub);}
+  .chip.active .cnt{background:rgba(255,255,255,.24);color:#fff;}
+  .chip.loading{opacity:.5;pointer-events:none;}
+
+  /* ===== Summary cards ===== */
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+  @media(max-width:767px){ .cards{grid-template-columns:repeat(2,1fr);} }
+  .card{background:var(--bg-card);border:1px solid var(--line-normal);border-radius:var(--radius-16);
+    padding:18px 20px;box-shadow:var(--shadow-card);}
+  .card .lbl{font-size:13px;color:var(--text-sub);font-weight:500;}
+  .card .val{margin-top:6px;font-size:28px;font-weight:700;color:var(--text-strong);letter-spacing:-.02em;}
+  .card .val.ok{color:var(--fill-success);}
+  .card .val.no{color:var(--fill-danger);}
+  .card .val small{font-size:15px;font-weight:600;color:var(--text-sub);}
+
+  /* ===== Overview ===== */
+  .ov-section{background:#fff;border:1px solid var(--line-normal);border-radius:var(--radius-16);
+    box-shadow:var(--shadow-card);padding:20px 22px;margin-bottom:16px;}
+  .ov-section h2{font-size:16px;font-weight:700;color:var(--text-strong);margin-bottom:4px;}
+  .ov-section .desc{font-size:13px;color:var(--text-sub);margin-bottom:16px;}
+  .ov-bar-row{display:grid;grid-template-columns:200px 1fr 168px;align-items:center;gap:14px;
+    padding:9px 8px;border-radius:var(--radius-8);cursor:pointer;}
+  .ov-bar-row:hover{background:var(--fill-hover);}
+  .ov-bar-label{font-size:14px;font-weight:600;color:var(--text-normal);white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis;}
+  .ov-bar-track{height:14px;background:var(--grey-10);border-radius:var(--radius-max);overflow:hidden;}
+  .ov-bar-fill{height:100%;border-radius:var(--radius-max);transition:width .5s ease;}
+  .ov-bar-meta{font-size:13px;color:var(--text-sub);text-align:right;white-space:nowrap;}
+  .ov-bar-meta b{font-weight:700;}
+  @media(max-width:767px){ .ov-bar-row{grid-template-columns:96px 1fr 96px;gap:8px;padding:8px 2px;}
+    .ov-bar-meta{font-size:11px;} .ov-bar-label{font-size:12px;} }
+  .ov-table-wrap{overflow-x:auto;}
+  .ov-table{width:100%;border-collapse:separate;border-spacing:0;font-size:14px;min-width:520px;}
+  .ov-table th{text-align:right;padding:10px;color:var(--text-sub);font-weight:600;font-size:13px;
+    border-bottom:1px solid var(--line-normal);white-space:nowrap;}
+  .ov-table th:first-child{text-align:left;}
+  .ov-table td{padding:11px 10px;text-align:right;border-bottom:1px solid var(--grey-10);white-space:nowrap;}
+  .ov-table td:first-child{text-align:left;font-weight:600;color:var(--text-strong);}
+  .ov-table tbody tr{cursor:pointer;}
+  .ov-table tbody tr:hover td{background:var(--fill-hover);}
+  .ov-rate{font-weight:700;}
+
+  /* ===== Toolbar ===== */
+  .toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+  .search{position:relative;flex:1;min-width:200px;max-width:320px;}
+  .search input{width:100%;height:40px;padding:0 14px 0 38px;border:1px solid var(--line-normal);
+    border-radius:var(--radius-12);font-family:var(--font);font-size:14px;color:var(--text-normal);
+    background:var(--bg-card);outline:none;transition:border-color .12s;}
+  .search input:focus{border-color:var(--line-primary);}
+  .search input::placeholder{color:var(--text-sub);}
+  .search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);}
+  .toggle{display:inline-flex;align-items:center;gap:7px;font-size:14px;color:var(--text-normal);
+    cursor:pointer;user-select:none;font-weight:500;}
+  .toggle input{width:18px;height:18px;accent-color:var(--fill-primary);cursor:pointer;}
+  .spacer{flex:1;}
+  .back-link{display:inline-flex;align-items:center;gap:5px;font-size:14px;font-weight:600;
+    color:var(--text-sub);cursor:pointer;background:none;border:none;font-family:var(--font);padding:0;}
+  .back-link:hover{color:var(--text-normal);}
+
+  /* ===== Detail table ===== */
+  .table-card{background:#fff;border:1px solid var(--line-normal);border-radius:var(--radius-16);
+    box-shadow:var(--shadow-card);overflow:hidden;}
+  .table-scroll{overflow:auto;max-height:70vh;}
+  table.detail{border-collapse:separate;border-spacing:0;width:100%;font-size:14px;}
+  table.detail thead th{position:sticky;top:0;z-index:3;background:var(--grey-10);color:var(--text-normal);
+    font-weight:600;text-align:center;padding:12px 10px;white-space:nowrap;
+    border-bottom:1px solid var(--line-normal);}
+  table.detail thead th.content-h{font-size:12px;font-weight:600;min-width:76px;max-width:120px;
+    white-space:normal;line-height:1.35;vertical-align:middle;}
+  table.detail tbody td{padding:11px 10px;text-align:center;border-bottom:1px solid var(--grey-10);
+    white-space:nowrap;color:var(--text-normal);}
+  table.detail tbody tr:hover td{background:var(--fill-hover);}
+  .sticky-1{position:sticky;left:0;z-index:2;background:#fff;text-align:left;font-weight:600;
+    color:var(--text-strong);min-width:96px;}
+  .sticky-2{position:sticky;z-index:2;background:#fff;color:var(--text-sub);font-size:13px;min-width:92px;}
+  .sticky-3{position:sticky;z-index:2;background:#fff;}
+  table.detail thead .sticky-1,table.detail thead .sticky-2,table.detail thead .sticky-3{z-index:4;background:var(--grey-10);}
+  table.detail tbody tr:hover .sticky-1,table.detail tbody tr:hover .sticky-2,table.detail tbody tr:hover .sticky-3{background:var(--fill-hover);}
+  .sticky-sep{box-shadow:1px 0 0 var(--line-normal);}
+
+  .badge{display:inline-block;padding:4px 12px;border-radius:var(--radius-max);
+    font-size:13px;font-weight:600;}
+  .badge.pass{background:var(--fill-success-weak);color:var(--text-success);}
+  .badge.fail{background:var(--fill-danger-weak);color:var(--text-danger);}
+  .cell-done{color:var(--text-normal);font-weight:500;}
+  .cell-done::before{content:"완료";}
+  .cell-miss{color:var(--text-danger);font-weight:600;}
+  .cell-miss::before{content:"미완료";}
+  .prog{font-size:12px;color:var(--text-sub);}
+
+  /* ===== States ===== */
+  .state{padding:64px 24px;text-align:center;color:var(--text-sub);}
+  .state .big{font-size:16px;font-weight:600;color:var(--text-normal);margin-bottom:6px;}
+  .spinner{width:32px;height:32px;border:3px solid var(--grey-20);border-top-color:var(--fill-primary);
+    border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .err-box{background:var(--fill-danger-weak);border:1px solid var(--line-danger);
+    border-radius:var(--radius-12);padding:16px 18px;color:var(--text-danger);font-size:14px;
+    margin-bottom:16px;line-height:1.7;}
+  .err-box b{font-weight:700;}
+  .err-box code{background:rgba(228,41,57,.10);padding:1px 6px;border-radius:4px;font-size:13px;}
+
+  .legend{margin-top:24px;padding-top:16px;border-top:1px dashed var(--line-normal);
+    font-size:13px;color:var(--text-sub);display:flex;flex-wrap:wrap;gap:16px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .lg-dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="title-block">
+      <h1>2026 고려사이버대학교 · 주제별 이수 현황</h1>
+      <div class="sub">신청 주제(소속 강의)별로 학생의 콘텐츠 학습 완료·이수 여부를 확인합니다.</div>
+    </div>
+    <div class="update-block">
+      <div class="update-info" id="updateInfo">
+        <span class="dot"></span><b>불러오는 중…</b>
+      </div>
+      <button class="btn btn-line" id="refreshBtn" onclick="loadFromSheet(true)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        새로고침
+      </button>
+    </div>
+  </header>
+
+  <div id="errSlot"></div>
+  <div class="subjects" id="subjects"></div>
+
+  <div id="main">
+    <div class="state"><div class="spinner"></div><div class="big">구글 시트에서 데이터를 불러오는 중입니다</div>
+      <div>6개 주제를 읽어오고 있어요.</div></div>
+  </div>
+
+  <div class="legend">
+    <span><span class="lg-dot" style="background:var(--fill-success)"></span> 이수 = 모든 콘텐츠 완료</span>
+    <span><span class="lg-dot" style="background:var(--fill-danger)"></span> 미이수 = 한 개라도 미완료</span>
+    <span><b style="color:var(--text-normal)">완료</b> = 개념 접속 + 유형문제 전부 풀이</span>
+    <span><b style="color:var(--text-danger)">미완료</b> = 미접속 또는 문제 미완료</span>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   설정 — 구글 시트(웹에 게시) CSV export
+   ============================================================ */
+const SHEET_PUB_BASE =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vSY-Pgc1Z3hk22RLg4EUDEJ7d08ssEIhatZZBWQ8M0zQDeekmsFTsQvhjpQvheW1p2hXMUnd9T-o3fk/pub";
+const SUBJECTS = [
+  { name:"미적분_(1) 수열의 극한",     gid:"0" },
+  { name:"미적분_(2) 미분",           gid:"1647752479" },
+  { name:"미적분_(3) 적분",           gid:"1058896394" },
+  { name:"확률과 통계_(1) 경우의 수",  gid:"430981935" },
+  { name:"확률과 통계_(2) 확률",       gid:"1598978244" },
+  { name:"확률과 통계_(3) 통계",       gid:"2083664398" },
+];
+const OVERVIEW = "__ALL__";
+const csvUrl = gid => `${SHEET_PUB_BASE}?gid=${encodeURIComponent(gid)}&single=true&output=csv&_=${Date.now()}`;
+
+/* 상태 */
+let DATA = {};                  // { subjectName: {students:Map, order:[], maxTs:Date|null} }
+let activeSubject = OVERVIEW;   // OVERVIEW 또는 주제명
+let searchTerm = "", onlyFail = false;
+
+/* ============================================================
+   CSV 파서
+   ============================================================ */
+function parseCSV(text){
+  const rows=[]; let i=0, field="", row=[], inQ=false;
+  text = text.replace(/^﻿/,"").replace(/\r\n/g,"\n").replace(/\r/g,"\n");
+  while(i<text.length){
+    const c=text[i];
+    if(inQ){
+      if(c==='"'){ if(text[i+1]==='"'){field+='"';i+=2;continue;} inQ=false;i++;continue; }
+      field+=c;i++;continue;
+    } else {
+      if(c==='"'){inQ=true;i++;continue;}
+      if(c===','){row.push(field);field="";i++;continue;}
+      if(c==='\n'){row.push(field);rows.push(row);row=[];field="";i++;continue;}
+      field+=c;i++;continue;
+    }
+  }
+  if(field.length>0||row.length>0){row.push(field);rows.push(row);}
+  return rows;
+}
+
+/* ============================================================
+   판정: 완료 = 개념접속 O 그리고 유형문제 전부 풀이
+   (전체유형문제수 0 = 풀 문제 없음 → 접속만으로 완료)
+   ============================================================ */
+function isDone(rec){
+  if(!rec) return false;
+  if(rec.access !== "O") return false;
+  return rec.total > 0 ? rec.solved >= rec.total : true;
+}
+
+function ingestRows(rows){
+  if(!rows || rows.length<2) return;
+  const h = rows[0].map(x=>String(x).trim());
+  const ix = n => h.indexOf(n);
+  const iName=ix("이름"), iSid=ix("학번"), iSubj=ix("소속강의"), iCont=ix("콘텐츠"),
+        iAcc=ix("개념접속여부"), iSolv=ix("유형푼문제수"), iTot=ix("전체유형문제수"),
+        iAccTs=ix("개념접속시각"), iLastTs=ix("CHECK_마지막푼날짜");
+  if(iName<0||iSubj<0||iCont<0) return;
+
+  const orderHint = {};
+  for(let r=1;r<rows.length;r++){
+    const row=rows[r]; if(!row || !row[iName]) continue;
+    const subj=(row[iSubj]||"").trim(); if(!subj) continue;
+    const name=(row[iName]||"").trim();
+    const cont=(row[iCont]||"").trim(); if(!cont) continue;
+
+    if(!DATA[subj]) DATA[subj]={students:new Map(), order:[], maxTs:null};
+    const S=DATA[subj];
+    if(!S.students.has(name)) S.students.set(name,{name, sid:(row[iSid]||"").trim(), c:new Map()});
+    const st=S.students.get(name);
+    if(st.sid==="" && row[iSid]) st.sid=(row[iSid]||"").trim();
+
+    const rec={ access:(row[iAcc]||"").trim(), solved:parseInt(row[iSolv],10)||0, total:parseInt(row[iTot],10)||0 };
+    const prev=st.c.get(cont);
+    if(!prev || (isDone(rec) && !isDone(prev)) || (rec.solved>prev.solved)) st.c.set(cont, rec);
+
+    for(const t of [row[iAccTs], row[iLastTs]]){
+      if(t){ const d=new Date(t); if(!isNaN(d) && (!S.maxTs || d>S.maxTs)) S.maxTs=d; }
+    }
+    orderHint[subj]=orderHint[subj]||{};
+    (orderHint[subj][name]=orderHint[subj][name]||[]);
+    if(!orderHint[subj][name].includes(cont)) orderHint[subj][name].push(cont);
+  }
+  for(const subj of Object.keys(orderHint)){
+    const S=DATA[subj]; let base=[];
+    for(const arr of Object.values(orderHint[subj])) if(arr.length>base.length) base=arr.slice();
+    const all=new Set(); for(const st of S.students.values()) for(const c of st.c.keys()) all.add(c);
+    const order=base.slice(); for(const c of all) if(!order.includes(c)) order.push(c);
+    S.order=order;
+  }
+}
+
+/* ============================================================
+   구글 시트 로드 (재시도 포함)
+   ============================================================ */
+async function fetchCsvWithRetry(gid, tries){
+  let lastErr;
+  for(let a=0;a<tries;a++){
+    try{
+      const res=await fetch(csvUrl(gid), {cache:"no-store"});
+      if(res.ok) return await res.text();
+      lastErr=new Error("HTTP "+res.status);
+    }catch(e){ lastErr=e; }
+  }
+  throw lastErr || new Error("fetch failed");
+}
+
+async function loadFromSheet(isRefresh){
+  DATA={};
+  setUpdateInfo(null, "불러오는 중…", true);
+  document.getElementById("refreshBtn").disabled=true;
+  markChipsLoading();
+  if(isRefresh) showLoadingMain();
+
+  let failed=[];
+  await Promise.all(SUBJECTS.map(async s=>{
+    try{ ingestRows(parseCSV(await fetchCsvWithRetry(s.gid, 3))); }
+    catch(e){ failed.push(s.name); }
+  }));
+
+  document.getElementById("refreshBtn").disabled=false;
+
+  if(Object.keys(DATA).length===0){
+    showSheetError();
+    setUpdateInfo(null, "불러오기 실패", false);
+    document.getElementById("subjects").innerHTML="";
+    document.getElementById("main").innerHTML="";
+    return;
+  }
+  clearError();
+  if(failed.length) showError(`일부 주제를 불러오지 못했습니다: <b>${failed.join(", ")}</b>. 새로고침을 눌러 다시 시도하세요.`);
+
+  let maxTs=null; for(const s of Object.values(DATA)) if(s.maxTs && (!maxTs||s.maxTs>maxTs)) maxTs=s.maxTs;
+  setUpdateInfo(maxTs, "구글 시트 (실시간)", true);
+
+  if(activeSubject!==OVERVIEW && !DATA[activeSubject]) activeSubject=OVERVIEW;
+  renderSubjects();
+  renderMain();
+}
+
+function presentSubjects(){
+  return SUBJECTS.map(s=>s.name).filter(n=>DATA[n])
+    .concat(Object.keys(DATA).filter(n=>!SUBJECTS.some(s=>s.name===n)));
+}
+
+/* ============================================================
+   렌더링
+   ============================================================ */
+function subjectLabel(name){ return name.replace(/_/g," "); }
+function rateColor(r){ return r>=80 ? "var(--fill-success)" : r>=50 ? "var(--fill-warning)" : "var(--fill-danger)"; }
+
+function renderSubjects(){
+  const box=document.getElementById("subjects");
+  const chips=[`<button class="chip overview${activeSubject===OVERVIEW?" active":""}" onclick="selectSubject('${OVERVIEW}')">📊 종합 현황</button>`];
+  for(const name of presentSubjects()){
+    const on = name===activeSubject ? " active":"";
+    chips.push(`<button class="chip${on}" onclick="selectSubject('${name.replace(/'/g,"\\'")}')">
+      ${subjectLabel(name)}<span class="cnt">${DATA[name].students.size}</span></button>`);
+  }
+  box.innerHTML = chips.join("");
+}
+function markChipsLoading(){
+  const box=document.getElementById("subjects");
+  if(box.children.length===0)
+    box.innerHTML = ['📊 종합 현황', ...SUBJECTS.map(s=>subjectLabel(s.name))]
+      .map(t=>`<button class="chip loading">${t}</button>`).join("");
+}
+function selectSubject(name){ activeSubject=name; searchTerm=""; onlyFail=false; renderSubjects(); renderMain(); }
+
+function computeRows(S){
+  const rows=[];
+  for(const st of S.students.values()){
+    const cells=S.order.map(c=>{ const rec=st.c.get(c); return {done:isDone(rec)}; });
+    const doneCount=cells.filter(x=>x.done).length;
+    const pass = S.order.length>0 && S.order.every(c=>isDone(st.c.get(c)));
+    rows.push({name:st.name, sid:st.sid, cells, doneCount, total:S.order.length, pass});
+  }
+  return rows;
+}
+
+function renderMain(){
+  if(activeSubject===OVERVIEW) renderOverview();
+  else renderSubjectDetail();
+}
+
+/* ---------- 종합 현황 ---------- */
+function renderOverview(){
+  const subs=[]; const uniq=new Set(); let totalPass=0, totalSeats=0;
+  for(const name of presentSubjects()){
+    const S=DATA[name]; const rows=computeRows(S);
+    const pass=rows.filter(r=>r.pass).length;
+    const avgProg = rows.length ? rows.reduce((a,r)=>a+(r.total?r.doneCount/r.total:0),0)/rows.length*100 : 0;
+    subs.push({ name, total:rows.length, pass, fail:rows.length-pass,
+      rate: rows.length?pass/rows.length*100:0, avgProg });
+    rows.forEach(r=>uniq.add(r.name));
+    totalPass+=pass; totalSeats+=rows.length;
+  }
+  const overall = totalSeats ? totalPass/totalSeats*100 : 0;
+
+  const bars = subs.map(s=>`
+    <div class="ov-bar-row" onclick="selectSubject('${s.name.replace(/'/g,"\\'")}')">
+      <div class="ov-bar-label">${subjectLabel(s.name)}</div>
+      <div class="ov-bar-track"><div class="ov-bar-fill"
+        style="width:${s.rate.toFixed(1)}%;background:${rateColor(s.rate)}"></div></div>
+      <div class="ov-bar-meta"><b style="color:${rateColor(s.rate)}">${s.rate.toFixed(1)}%</b>
+        · 이수 ${s.pass}/${s.total}</div>
+    </div>`).join("");
+
+  const tableRows = subs.map(s=>`
+    <tr onclick="selectSubject('${s.name.replace(/'/g,"\\'")}')">
+      <td>${subjectLabel(s.name)}</td>
+      <td>${s.total}</td>
+      <td style="color:var(--fill-success);font-weight:700">${s.pass}</td>
+      <td style="color:var(--fill-danger);font-weight:700">${s.fail}</td>
+      <td class="ov-rate" style="color:${rateColor(s.rate)}">${s.rate.toFixed(1)}%</td>
+      <td>${s.avgProg.toFixed(0)}%</td>
+    </tr>`).join("");
+
+  document.getElementById("main").innerHTML = `
+    <div class="cards">
+      <div class="card"><div class="lbl">신청 주제</div><div class="val">${subs.length}<small> 개</small></div></div>
+      <div class="card"><div class="lbl">전체 학생 (고유)</div><div class="val">${uniq.size}<small> 명</small></div></div>
+      <div class="card"><div class="lbl">총 이수 건수</div><div class="val ok">${totalPass}<small> 건</small></div></div>
+      <div class="card"><div class="lbl">전체 이수율</div><div class="val" style="color:${rateColor(overall)}">${overall.toFixed(1)}<small> %</small></div></div>
+    </div>
+
+    <div class="ov-section">
+      <h2>주제별 이수율</h2>
+      <div class="desc">막대 또는 표의 행을 클릭하면 해당 주제의 상세 명단으로 이동합니다.</div>
+      ${bars}
+    </div>
+
+    <div class="ov-section">
+      <h2>주제별 요약</h2>
+      <div class="desc">‘평균 완료율’은 학생들이 각 주제의 콘텐츠를 평균적으로 얼마나 끝냈는지를 보여줍니다 (이수 여부와 별개의 진도 지표).</div>
+      <div class="ov-table-wrap"><table class="ov-table">
+        <thead><tr><th>신청 주제</th><th>학생</th><th>이수</th><th>미이수</th><th>이수율</th><th>평균 완료율</th></tr></thead>
+        <tbody>${tableRows}</tbody>
+      </table></div>
+    </div>
+  `;
+}
+
+/* ---------- 주제 상세 ---------- */
+function renderSubjectDetail(){
+  const main=document.getElementById("main");
+  const S=DATA[activeSubject];
+  if(!S){ main.innerHTML=`<div class="state"><div class="big">데이터가 없습니다</div></div>`; return; }
+
+  const allRows=computeRows(S);
+  const passN=allRows.filter(r=>r.pass).length;
+  const total=allRows.length;
+  const rate= total? Math.round(passN/total*1000)/10 : 0;
+
+  let rows=allRows.slice().sort((a,b)=> a.name.localeCompare(b.name,"ko"));
+  if(onlyFail) rows=rows.filter(r=>!r.pass);
+  if(searchTerm){ const q=searchTerm.toLowerCase();
+    rows=rows.filter(r=> r.name.toLowerCase().includes(q) || (r.sid||"").includes(q)); }
+
+  main.innerHTML = `
+    <div class="toolbar" style="margin-bottom:16px">
+      <button class="back-link" onclick="selectSubject('${OVERVIEW}')">← 종합 현황</button>
+      <span style="font-size:18px;font-weight:700;color:var(--text-strong)">${subjectLabel(activeSubject)}</span>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="lbl">전체 학생</div><div class="val">${total}<small> 명</small></div></div>
+      <div class="card"><div class="lbl">이수</div><div class="val ok">${passN}<small> 명</small></div></div>
+      <div class="card"><div class="lbl">미이수</div><div class="val no">${total-passN}<small> 명</small></div></div>
+      <div class="card"><div class="lbl">이수율</div><div class="val" style="color:${rateColor(rate)}">${rate}<small> %</small></div></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9294a2" stroke-width="2"
+          stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="searchInput" type="text" placeholder="학생명·학번 검색" value="${escapeHtml(searchTerm)}">
+      </div>
+      <label class="toggle"><input type="checkbox" id="failChk" ${onlyFail?"checked":""}> 미이수만 보기</label>
+      <div class="spacer"></div>
+      <button class="btn btn-weak" onclick="downloadCSV()">⬇ CSV 다운로드</button>
+      <button class="btn btn-primary" onclick="downloadXLSX()">⬇ Excel 다운로드</button>
+    </div>
+
+    <div class="table-card"><div class="table-scroll">${tableHTML(S, rows)}</div></div>
+  `;
+
+  const si=document.getElementById("searchInput");
+  si.addEventListener("input", e=>{ searchTerm=e.target.value; renderSubjectDetail(); setTimeout(()=>{
+    const el=document.getElementById("searchInput"); if(el){el.focus();
+      el.setSelectionRange(el.value.length,el.value.length);} },0); });
+  document.getElementById("failChk").addEventListener("change", e=>{ onlyFail=e.target.checked; renderSubjectDetail(); });
+}
+
+function tableHTML(S, rows){
+  if(rows.length===0)
+    return `<div class="state"><div class="big">표시할 학생이 없습니다</div><div>검색어나 필터를 확인하세요.</div></div>`;
+  const head = `<thead><tr>
+    <th class="sticky-1" style="left:0">학생명</th>
+    <th class="sticky-2" style="left:96px">학번</th>
+    <th class="sticky-3 sticky-sep" style="left:188px">이수여부</th>
+    ${S.order.map(c=>`<th class="content-h">${escapeHtml(c)}</th>`).join("")}
+  </tr></thead>`;
+  const body = "<tbody>"+rows.map(r=>`<tr>
+    <td class="sticky-1" style="left:0">${escapeHtml(r.name)}</td>
+    <td class="sticky-2" style="left:96px">${escapeHtml(r.sid||"-")}</td>
+    <td class="sticky-3 sticky-sep" style="left:188px">
+      <span class="badge ${r.pass?"pass":"fail"}">${r.pass?"이수":"미이수"}</span>
+      <div class="prog">${r.doneCount}/${r.total}</div>
+    </td>
+    ${r.cells.map(x=>`<td><span class="${x.done?"cell-done":"cell-miss"}"></span></td>`).join("")}
+  </tr>`).join("")+"</tbody>";
+  return `<table class="detail">${head}${body}</table>`;
+}
+
+/* ============================================================
+   다운로드
+   ============================================================ */
+function currentExportRows(){
+  const S=DATA[activeSubject]; if(!S) return null;
+  let rows=computeRows(S).sort((a,b)=>a.name.localeCompare(b.name,"ko"));
+  if(onlyFail) rows=rows.filter(r=>!r.pass);
+  if(searchTerm){ const q=searchTerm.toLowerCase();
+    rows=rows.filter(r=> r.name.toLowerCase().includes(q) || (r.sid||"").includes(q)); }
+  const header=["학생명","학번","이수여부", ...S.order];
+  const aoa=[header];
+  for(const r of rows) aoa.push([r.name, r.sid||"", r.pass?"이수":"미이수", ...r.cells.map(x=>x.done?"완료":"미완료")]);
+  return {aoa, header};
+}
+function safeName(){ return subjectLabel(activeSubject).replace(/[\\/:*?"<>|]/g,"").trim(); }
+
+function downloadCSV(){
+  const ex=currentExportRows(); if(!ex) return;
+  const csv=ex.aoa.map(row=>row.map(v=>{
+    v=String(v); return /[",\n]/.test(v)? '"'+v.replace(/"/g,'""')+'"' : v; }).join(",")).join("\r\n");
+  triggerDownload(new Blob(["﻿"+csv], {type:"text/csv;charset=utf-8"}), `이수현황_${safeName()}.csv`);
+}
+function downloadXLSX(){
+  if(window.__xlsxFailed || typeof XLSX==="undefined"){
+    alert("엑셀 모듈을 불러오지 못했습니다. CSV 다운로드를 이용해 주세요."); return; }
+  const ex=currentExportRows(); if(!ex) return;
+  const ws=XLSX.utils.aoa_to_sheet(ex.aoa);
+  ws["!cols"]=[{wch:12},{wch:12},{wch:9}, ...ex.header.slice(3).map(()=>({wch:14}))];
+  ws["!freeze"]={xSplit:3,ySplit:1};
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, safeName().slice(0,31)||"이수현황");
+  XLSX.writeFile(wb, `이수현황_${safeName()}.xlsx`);
+}
+function triggerDownload(blob, filename){
+  const url=URL.createObjectURL(blob); const a=document.createElement("a");
+  a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+  a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+
+/* ============================================================
+   보조
+   ============================================================ */
+function setUpdateInfo(ts, sourceLabel, online){
+  const p=n=>String(n).padStart(2,"0");
+  const fmt=d=> d? `${d.getFullYear()}.${p(d.getMonth()+1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}` : "-";
+  document.getElementById("updateInfo").innerHTML=
+    `<span class="dot${online?"":" off"}"></span>데이터 출처: <b>${sourceLabel}</b><br>`+
+    `최근 학습 기록: <b>${fmt(ts)}</b> · 조회 ${fmt(new Date())}`;
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>(
+  {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function showLoadingMain(){
+  document.getElementById("main").innerHTML=
+    `<div class="state"><div class="spinner"></div><div class="big">데이터를 새로 불러오는 중…</div></div>`;
+}
+function showError(msg){ document.getElementById("errSlot").innerHTML=`<div class="err-box">${msg}</div>`; }
+function clearError(){ document.getElementById("errSlot").innerHTML=""; }
+function showSheetError(){
+  const isFile = location.protocol==="file:";
+  if(isFile){
+    showError(`구글 시트 데이터를 불러오지 못했습니다.<br>
+      이 파일을 <b>더블클릭(내 컴퓨터에서 직접 열기)</b>하면 브라우저 보안 정책상 외부(구글) 데이터를 읽을 수 없습니다.<br>
+      → 이 파일을 <b>웹에 올린 뒤 그 링크(http/https)로 접속</b>하면 정상 동작합니다.`);
+  } else {
+    showError(`구글 시트에서 데이터를 불러오지 못했습니다.<br>
+      · 인터넷 연결 또는 시트의 <b>웹 게시</b> 상태를 확인해 주세요.<br>
+      · 잠시 후 <b>새로고침</b>을 눌러 다시 시도해 주세요.`);
+  }
+}
+
+/* 시작 */
+loadFromSheet(false);
+</script>
+</body>
+</html>
