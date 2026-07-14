@@ -479,15 +479,10 @@ function renderSubjectDetail(){
   const S=DATA[activeSubject];
   if(!S){ main.innerHTML=`<div class="state"><div class="big">데이터가 없습니다</div></div>`; return; }
 
-  const allRows=computeRows(S);
+  const allRows=computeRows(S).sort((a,b)=> a.name.localeCompare(b.name,"ko"));
   const passN=allRows.filter(r=>r.pass).length;
   const total=allRows.length;
   const rate= total? Math.round(passN/total*1000)/10 : 0;
-
-  let rows=allRows.slice().sort((a,b)=> a.name.localeCompare(b.name,"ko"));
-  if(onlyFail) rows=rows.filter(r=>!r.pass);
-  if(searchTerm){ const q=searchTerm.toLowerCase();
-    rows=rows.filter(r=> r.name.toLowerCase().includes(q) || (r.sid||"").includes(q)); }
 
   main.innerHTML = `
     <div class="toolbar" style="margin-bottom:16px">
@@ -513,14 +508,25 @@ function renderSubjectDetail(){
       <button class="btn btn-primary" onclick="downloadXLSX()">⬇ Excel 다운로드</button>
     </div>
 
-    <div class="table-card"><div class="table-scroll">${tableHTML(S, rows)}</div></div>
+    <div class="table-card"><div class="table-scroll" id="detailTableScroll"></div></div>
   `;
 
+  // 표만 갱신(입력창은 그대로 유지 → 한글 IME 조합이 깨지지 않음)
+  function applyFilter(){
+    let rows=allRows;
+    if(onlyFail) rows=rows.filter(r=>!r.pass);
+    const q=searchTerm.trim().toLowerCase();
+    if(q) rows=rows.filter(r=> r.name.toLowerCase().includes(q) || (r.sid||"").toLowerCase().includes(q));
+    document.getElementById("detailTableScroll").innerHTML = tableHTML(S, rows);
+  }
+  applyFilter();
+
   const si=document.getElementById("searchInput");
-  si.addEventListener("input", e=>{ searchTerm=e.target.value; renderSubjectDetail(); setTimeout(()=>{
-    const el=document.getElementById("searchInput"); if(el){el.focus();
-      el.setSelectionRange(el.value.length,el.value.length);} },0); });
-  document.getElementById("failChk").addEventListener("change", e=>{ onlyFail=e.target.checked; renderSubjectDetail(); });
+  let composing=false;
+  si.addEventListener("compositionstart",()=>{ composing=true; });
+  si.addEventListener("compositionend", e=>{ composing=false; searchTerm=e.target.value; applyFilter(); });
+  si.addEventListener("input", e=>{ searchTerm=e.target.value; if(!composing) applyFilter(); });
+  document.getElementById("failChk").addEventListener("change", e=>{ onlyFail=e.target.checked; applyFilter(); });
 }
 
 function tableHTML(S, rows){
