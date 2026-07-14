@@ -275,6 +275,10 @@ function isDone(rec){
   return rec.total > 0 ? rec.solved >= rec.total : true;
 }
 
+/* 학생 식별 키: 학번이 있으면 (이름+학번)으로 구분(동명이인 분리),
+   학번이 없으면 이름으로. → 명수는 학번 기준으로 집계됨 */
+function studentKey(name, sid){ return sid ? name + " ## " + sid : name; }
+
 function ingestRows(rows){
   if(!rows || rows.length<2) return;
   const h = rows[0].map(x=>String(x).trim());
@@ -293,9 +297,10 @@ function ingestRows(rows){
 
     if(!DATA[subj]) DATA[subj]={students:new Map(), order:[], maxTs:null};
     const S=DATA[subj];
-    if(!S.students.has(name)) S.students.set(name,{name, sid:(row[iSid]||"").trim(), c:new Map()});
-    const st=S.students.get(name);
-    if(st.sid==="" && row[iSid]) st.sid=(row[iSid]||"").trim();
+    const sid=(row[iSid]||"").trim();
+    const key=studentKey(name, sid);
+    if(!S.students.has(key)) S.students.set(key,{name, sid, c:new Map()});
+    const st=S.students.get(key);
 
     const rec={ access:(row[iAcc]||"").trim(), solved:parseInt(row[iSolv],10)||0, total:parseInt(row[iTot],10)||0 };
     const prev=st.c.get(cont);
@@ -419,7 +424,7 @@ function renderOverview(){
     const avgProg = rows.length ? rows.reduce((a,r)=>a+(r.total?r.doneCount/r.total:0),0)/rows.length*100 : 0;
     subs.push({ name, total:rows.length, pass, fail:rows.length-pass,
       rate: rows.length?pass/rows.length*100:0, avgProg });
-    rows.forEach(r=>uniq.add(r.name));
+    rows.forEach(r=>uniq.add(studentKey(r.name, r.sid)));
     totalPass+=pass; totalSeats+=rows.length;
   }
   const overall = totalSeats ? totalPass/totalSeats*100 : 0;
