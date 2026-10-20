@@ -1,0 +1,9 @@
+{
+  "name": "koreacu-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "2026 고려사이버대학교 주제별 이수 현황 대시보드 (바이브코딩DB 연동)",
+  "dependencies": {
+    "pg": "8.13.1"
+  }
+}

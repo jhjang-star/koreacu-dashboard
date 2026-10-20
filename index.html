@@ -248,11 +248,10 @@ const SOURCES = [
   //   gids:  ["0","1647752479","1058896394","430981935","1598978244","2083664398"],
   // },
 
-  // 2026학년도 2학기 — 바이브코딩DB 연결 후 아래 주석을 풀어 채우세요.
-  //  (A) 1학기와 같은 '웹에 게시된 구글 시트' 형태라면:
-  //   { label:"구글 시트 (2학기)", base:"https://docs.google.com/.../pub", gids:["gidA","gidB", ...] },
-  //  (B) CSV를 주는 엔드포인트(바이브코딩DB) 하나라면:
-  //   { label:"바이브코딩DB (2학기)", url:"https://.../export?semester=2026-2&format=csv" },
+  // 2026학년도 2학기 — 바이브코딩DB(Postgres)를 Vercel 중계 함수(/api/data)로 읽음.
+  //   · /api/data = 같은 사이트 안의 서버 함수(api/data.js)로, 바이브DB에서 직접 데이터를 가져옵니다.
+  //   · 비밀번호는 Vercel 환경변수에만 있고 이 페이지에는 노출되지 않습니다.
+  { label: "바이브코딩DB (2학기)", url: "/api/data" },
 ];
 
 const SEMESTERS = [
