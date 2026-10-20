@@ -240,12 +240,13 @@
      접두사가 없으면 2026-1(기존 1학기 데이터)로 간주합니다.
    ============================================================ */
 const SOURCES = [
-  // 2026학년도 1학기 — 기존 구글 시트(웹에 게시), 탭 6개
-  {
-    label: "구글 시트 (1학기)",
-    base:  "https://docs.google.com/spreadsheets/d/e/2PACX-1vSY-Pgc1Z3hk22RLg4EUDEJ7d08ssEIhatZZBWQ8M0zQDeekmsFTsQvhjpQvheW1p2hXMUnd9T-o3fk/pub",
-    gids:  ["0","1647752479","1058896394","430981935","1598978244","2083664398"],
-  },
+  // 2026학년도 1학기 — 현재 학습자료가 비공개(조회 불가)라 숨김 처리.
+  //   1학기를 다시 공개하면 아래 주석만 풀면 복구됩니다.
+  // {
+  //   label: "구글 시트 (1학기)",
+  //   base:  "https://docs.google.com/spreadsheets/d/e/2PACX-1vSY-Pgc1Z3hk22RLg4EUDEJ7d08ssEIhatZZBWQ8M0zQDeekmsFTsQvhjpQvheW1p2hXMUnd9T-o3fk/pub",
+  //   gids:  ["0","1647752479","1058896394","430981935","1598978244","2083664398"],
+  // },
 
   // 2026학년도 2학기 — 바이브코딩DB 연결 후 아래 주석을 풀어 채우세요.
   //  (A) 1학기와 같은 '웹에 게시된 구글 시트' 형태라면:
@@ -410,16 +411,24 @@ async function loadData(isRefresh){
 
   const anyData = SEMESTERS.some(s=>DATA[s.id] && Object.keys(DATA[s.id]).length);
   if(!anyData){
-    showSheetError();
-    setUpdateInfo(null, "불러오기 실패", false);
     document.getElementById("subjects").innerHTML="";
-    document.getElementById("main").innerHTML="";
     renderSemesters();
+    if(jobs.length===0){                   // 연결된 데이터 소스가 없음 → 대기 상태
+      clearError(); setUpdateInfo(null, "연결 대기 중", false); showEmptySemester();
+    } else {                               // 소스는 있으나 모두 불러오기 실패
+      showSheetError(); setUpdateInfo(null, "불러오기 실패", false);
+      document.getElementById("main").innerHTML="";
+    }
     return;
   }
   clearError();
   if(failed.length) showError(`일부 데이터를 불러오지 못했습니다: <b>${[...new Set(failed)].join(", ")}</b>. 새로고침으로 다시 시도하세요.`);
 
+  // 기본 학기에 데이터가 없으면, 데이터가 있는 학기로 자동 전환
+  if(!(DATA[activeSemester] && Object.keys(DATA[activeSemester]).length)){
+    const firstWith = SEMESTERS.find(s=>DATA[s.id] && Object.keys(DATA[s.id]).length);
+    if(firstWith) activeSemester=firstWith.id;
+  }
   setUpdateInfo(semesterMaxTs(activeSemester), "구글 시트 (실시간)", true);
 
   if(activeSubject!==OVERVIEW && !(DATA[activeSemester]||{})[activeSubject]) activeSubject=OVERVIEW;
@@ -451,11 +460,11 @@ function rateColor(r){ return r>=80 ? "var(--fill-success)" : r>=50 ? "var(--fil
 
 function renderSemesters(){
   const box=document.getElementById("semseg");
-  box.innerHTML = SEMESTERS.map(s=>{
-    const has = DATA[s.id] && Object.keys(DATA[s.id]).length;
-    const cnt = has ? ` <span class="scnt">${uniqStudents(s.id)}</span>` : "";
-    return `<button class="${s.id===activeSemester?'active':''}" onclick="selectSemester('${s.id}')">${s.label}${cnt}</button>`;
-  }).join("");
+  const withData = SEMESTERS.filter(s=>DATA[s.id] && Object.keys(DATA[s.id]).length);
+  if(withData.length<=1){ box.innerHTML=""; return; }   // 학기가 하나뿐이면 토글 숨김
+  box.innerHTML = withData.map(s=>
+    `<button class="${s.id===activeSemester?'active':''}" onclick="selectSemester('${s.id}')">${s.label} <span class="scnt">${uniqStudents(s.id)}</span></button>`
+  ).join("");
 }
 function selectSemester(sem){
   if(sem===activeSemester) return;
