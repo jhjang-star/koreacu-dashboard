@@ -204,12 +204,6 @@
       <div class="update-info" id="updateInfo">
         <span class="dot"></span><b>불러오는 중…</b>
       </div>
-      <button class="btn btn-line" id="refreshBtn" onclick="loadData(true)">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-          stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/>
-          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-        새로고침
-      </button>
     </div>
   </header>
 
@@ -388,8 +382,7 @@ async function fetchTextWithRetry(url, tries){
 
 async function loadData(isRefresh){
   DATA={};
-  setUpdateInfo(null, "불러오는 중…", true);
-  document.getElementById("refreshBtn").disabled=true;
+  setUpdateInfo("loading");
   renderSemesters(); markChipsLoading();
   if(isRefresh) showLoadingMain();
 
@@ -406,16 +399,15 @@ async function loadData(isRefresh){
     }
   }
   await Promise.all(jobs);
-  document.getElementById("refreshBtn").disabled=false;
 
   const anyData = SEMESTERS.some(s=>DATA[s.id] && Object.keys(DATA[s.id]).length);
   if(!anyData){
     document.getElementById("subjects").innerHTML="";
     renderSemesters();
     if(jobs.length===0){                   // 연결된 데이터 소스가 없음 → 대기 상태
-      clearError(); setUpdateInfo(null, "연결 대기 중", false); showEmptySemester();
+      clearError(); setUpdateInfo("waiting"); showEmptySemester();
     } else {                               // 소스는 있으나 모두 불러오기 실패
-      showSheetError(); setUpdateInfo(null, "불러오기 실패", false);
+      showSheetError(); setUpdateInfo("failed");
       document.getElementById("main").innerHTML="";
     }
     return;
@@ -428,7 +420,7 @@ async function loadData(isRefresh){
     const firstWith = SEMESTERS.find(s=>DATA[s.id] && Object.keys(DATA[s.id]).length);
     if(firstWith) activeSemester=firstWith.id;
   }
-  setUpdateInfo(semesterMaxTs(activeSemester), "구글 시트 (실시간)", true);
+  setUpdateInfo("ok");
 
   if(activeSubject!==OVERVIEW && !(DATA[activeSemester]||{})[activeSubject]) activeSubject=OVERVIEW;
   renderSemesters(); renderSubjects(); renderMain();
@@ -468,7 +460,7 @@ function renderSemesters(){
 function selectSemester(sem){
   if(sem===activeSemester) return;
   activeSemester=sem; activeSubject=OVERVIEW; searchTerm=""; onlyFail=false;
-  setUpdateInfo(semesterMaxTs(sem), "구글 시트 (실시간)", true);
+  setUpdateInfo("ok");
   renderSemesters(); renderSubjects(); renderMain();
 }
 
@@ -698,12 +690,18 @@ function triggerDownload(blob, filename){
 /* ============================================================
    보조
    ============================================================ */
-function setUpdateInfo(ts, sourceLabel, online){
-  const p=n=>String(n).padStart(2,"0");
-  const fmt=d=> d? `${d.getFullYear()}.${p(d.getMonth()+1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}` : "-";
-  document.getElementById("updateInfo").innerHTML=
-    `<span class="dot${online?"":" off"}"></span>데이터 출처: <b>${sourceLabel}</b><br>`+
-    `최근 학습 기록: <b>${fmt(ts)}</b> · 조회 ${fmt(new Date())}`;
+function setUpdateInfo(state){
+  const el=document.getElementById("updateInfo");
+  if(state==="loading"){ el.innerHTML=`<span class="dot"></span><b>불러오는 중…</b>`; return; }
+  if(state==="waiting"){ el.innerHTML=`<span class="dot off"></span>데이터 출처: <b>연결 대기 중</b>`; return; }
+  if(state==="failed"){ el.innerHTML=`<span class="dot off"></span>데이터 출처: <b>불러오기 실패</b>`; return; }
+  // ok — 바이브코딩DB는 매시 정각 자동 동기화 → 직전 정각이 최근 동기화 시점
+  const now=new Date(), p=n=>String(n).padStart(2,"0");
+  const fmt=d=>`${d.getFullYear()}.${p(d.getMonth()+1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  const synced=new Date(now); synced.setMinutes(0,0,0);
+  el.innerHTML=
+    `<span class="dot"></span>데이터 출처: <b>바이브코딩DB</b> · 매시 정각 자동 동기화<br>`+
+    `최근 동기화: <b>${fmt(synced)}</b> · 조회 ${fmt(now)}`;
 }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>(
   {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
