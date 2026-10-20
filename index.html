@@ -63,6 +63,15 @@
   .btn-weak{background:var(--fill-primary-weak);color:var(--text-primary);}
   .btn:disabled{background:var(--fill-disable);color:#fff;cursor:not-allowed;filter:none;}
 
+  /* ===== Semester segmented control ===== */
+  .semseg{display:inline-flex;background:var(--grey-10);border-radius:var(--radius-max);
+    padding:4px;gap:4px;margin-bottom:16px;}
+  .semseg button{border:none;background:none;height:36px;padding:0 20px;border-radius:var(--radius-max);
+    font-family:var(--font);font-weight:600;font-size:14px;color:var(--text-sub);cursor:pointer;transition:all .12s;}
+  .semseg button.active{background:#fff;color:var(--text-strong);box-shadow:var(--shadow-card);}
+  .semseg button:not(.active):hover{color:var(--text-normal);}
+  .semseg .scnt{opacity:.55;font-weight:600;margin-left:3px;}
+
   /* ===== Subject chips ===== */
   .subjects{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
   .chip{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;
@@ -186,7 +195,7 @@
   <header class="top">
     <div class="title-block">
       <div class="title-row">
-        <img class="emblem" src="data:image/png;base64,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" alt="고려사이버대학교 엠블럼" width="46" height="45">
+        <img class="emblem" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADkAAAA4CAYAAABHRFAgAAAS00lEQVR4nN1bB1RU59bdM6CICGikqthRBsQuKiqoRH9r1Gg0MdZYokn0WTLRWJNnTSaxoOZZEo01llhj713sBXFAiooIBCNdaTJv7cPceYOhWfK/f/17LZZT7tx7z/1O2WefTxXeMnTQlATQHEBLAB4ANAAqASgDwMZ4WBqAVAAPAIQa/04DCNJCn/6270n1Nk6ig8YaQHcA/QC0AcD3r4PnAE4AWAtghxb6Z/91I3XQuAIYB2A4ALu/nFytRqvZY5D9PAOZqc/w5GY47h44DdtKzqjaoRViLwZDpVJBXcISsRdvvvxzrvTPAL7XQh/zJvepfp0f6aCx00HzA4AoAF/SwJK2uZ7Yef33KPWOvbyu2KIBstKew9LaCtbly8ofUd6zJjz6dITvtM/gPbQXavVsn3szlhbw+KgzLEqWgNG9xwC4q4MmUAeN/f+akTpoegMIAzAeQCnl8zbzJqC8Zw08OnsN/t9/aVpJ3nDS3YfIyc5Gaad35POyNSsj9Lc9sLAqCSu7MkiMvC+fu7/fDjW7tRXD6w77QFYcAGN8FIDbOmg+/luN1EFjo4PmVwCbALiUc68C16Z1Td+HrNmJxuMG4db6P2BfjXkGeHjmCuyqVoRbax88OHnJZCRX1KmhJ8pUdEZCRDQSI6Llcxp2dNQsWf1KrRqh3qd9zG/BCcA6HTT84yoXG5bFNLAKgL0APKFSoe7QXshMToXfd+Oxul4PZCSlIOtZurhn9+2LkPowDuU11fGnPgp7+0+Qc5S0K4O0mHh5fW7Gv8RQmwpOcq7EyGjYuDrC2qEcVJYW0PTtDKd6HljTqJcc33bB18hMScOVwHV4Fv+Uq9lIB00XLfSRbyXx6KDxBrCPIcb3AYunICv1GVyaeMtNG3JysHfARNT/7CPcO3wOCbfvorRzeWQkpuBFRiZeBRWa1xdvUH63p99X8jC6bV+EjIRkPA27g9NTA5XvHwPooIX+2hsZaTTwJMNI+YyZsOOq2YgPvo37Jy6i+7ZAHP3HbIRtOZDnt0wiFVs0fFitk1+McwNNjm1lV8sSNqXFc7LSnmWnPnic/fjKLXXU3pPOD09fdsvJfiG/c27oieqd/XHvSJBk31azxohXlLC1Qfj2w7Ct5IITWp1ymWQA/kUZqirCRc9wBW3dXJCZnCZuSbT+8StYlrKCXZUKcsH0xJRcV1SpmDiimk8ZkeDc0LM2VKrixY7BkBZ3LTTs3Ix/2YfvOFIDBkOe1W0+dSTOz1mBtoGTxNXDtx0y/zVXtEVhrqsqKMkAuMAYLFXODl03z5cysLPHaMaEZMVavdojbNM+KCvg2f+9sIDAySWsytpWxxsgMzn1zrGxczOCV24jWxIwVgdc2YqN/gOQdIckCajeyQ93DpyB4YVcPxRAEy30qa9iJLPoQBrTbetCnJzwI6BWo91P03Bp3q+I2nvSFDf2VSsm9z6yMtq+ulsdvEUkR8eEbGozqFJS1H37d2pXQwXf+ri5arspZFhqnBt54dTX85WfrNdC369YRuqgYd7eyNc2Lg5SDlIfxaHZpOF4evseHOvWwr5Bk+hiLNzhndd956RSq1+7UBcGQ05O8r5Bk2Jvrd1Vi+/rDu8NehZj9OiYOfCZMBTx10IRuol5UdBfC/26QuskmQyABcr7tNgneHTuGpLvPULKwzhU69ASB4dNEwObTf40uMsGXY03MZCZOSH8HuKuhQohMLqeCSq12q7Tmrk1W80ac4PvI3YegdeAbrB2fAd1Br+PCs3q4UVWtvlP5umgKVdUnfyGhf7lg+i2Lo28sKvXGLzIzBIDW878BzPvKyH+RhhS7sfKOeKu6iV7OtRxR/DKbUh/mgQre1u493gXHh91QtV2vpLIuBBNJw0n67hxavKCuixXHVbOlO8PDJtmIhJGOAL4p5Eh/dVdjWQ7ypyq5TnQwkKeNF2UK1hctkT2ErZ5P27+uh3Zz9LFqJC1u9BwdD80GT9ImJJTfQ1izt9AzIUbuMtkkpMjYUJjG3zeF2UqkOwgZ++AieG31u6q7dmvK5LuPBRGld8lAdTUQh+dn5EsPrmkswAwyQyNPGAorovS1fd/MkUIQoNRH6POwO5waqDBmWmLcGPFFmFH15dvloRSokxpKReVW/tImchOzzCdh3E4KHgnWVHyL7U6GhIj7xd1/YVa6MfkMdLYD7Le2Bb2y2GRB24WN4syzg59Oh0Bi6eCdZadCY2lu1Zp54uQ1TsQe+mmcNTQjXuhLlFCVvpJSLi0Zs+fJJjO5fvN5/Cd/rm8TrkfG7KscluvIi7/jLxCKSlKTHYvykDPfl3Di2Mg6+blBWsk5kjA1/n0xtCIA0LOd/QYBUOOAb0P/QzvIT3ljyBNzE7PhIO3O8p7VJfVPfvNEtM5ryxci9q9O0pWtXVz8ao77IPQGyu2mOpoPigNgCdfbW5kfxQGlQoBi6ZYFHoMs3FMPE5PWYjIP47Do29n+M0Zi5A1u4QpJUfHQOpd8/qIDw6HfXU30++EeD9JgKVVSfh+8wXOzVhq+o5e4DdnnBiooM38idbBv2yV2C0E/UxGGjWZ1iZ71Goxyjydk6oVh8lE7DwKr0E9UK2jH6wdy0FtaYmy1SthfbMPMSrhvHDS+iM/xEXdSqQ8eIyYoOu4d+QcfCYOw71DZ+E1sBu2d/tCrs1EV65mZXTbFih9qjlK2FhXqdWzXUTYlgM1TR+qVFBbqE0MjJxWB01pSijMkL7mmgxvotnkT/OclFy0KAMpbRzX6oSCPQq6jgtzV2BzwGA8OHVZOgu2SkdHzxI3JgkP+XU7rB3K4vrSTQiatQzsT4+wl0zNlXV8p38mGTj62Pl8r9dsyohcIm2E14BuaDV7bJ5nYbRN3LWF+TdXl2xQ6pOpm3BqoKldlJHXfvpNEkfI6u2S2qkIlK3hJi0XWRJXjU+ZxpL/Ru45IU2ypXUpqNQq8aA/b/2HYzNRsX0rCI7etTS8BmsuwURmft9G+AE4zJX8awCbdQFsl1RqdaHdBOODDXKv/cvxIjNb4q5G1zYiY8RcDEa1jq0ktqzK2sK+hhtOTVqAnKxs6Turd/aTBMUSY9R2BPePsz8oBCpVqUr+Te4VdN9GiG1qoy5aIKp1bBVb2Pe8GVKz3kdWorxXTVDQeqqPxO0t+1GWycVgQEZSKsJ3HIFL4zpATg6yn6fDrrKr8cYg5YK/I11TwJjN56bzoEZn/7hCDwBqK+6aK8gUAOeGnnkJpRmY3c7NXIpe+5aLu5GZtPj2C4mrEjbW4j5MIDdXbZMHwfiMuRAMg8FgyowUuKgVPQm+jdSHLNVABd8Gco7EqAfi8gWBxKIIVFaMLNQVbd1c8vBboVIGwLVZPVxbsgEp0THCbLgK79SqgttbD4mew86FsUhO+izuKZp+PVxaNPLTfhc2Y5P/ADkfY7bljNHS2TD+yZO7bvxR3Lso2Lg6FqVR2Sruqkj3+UKRLNITkoVqZaY8w8OzV7G106cImrOczbJQtMykFKFwdF/2mmemBmLn+6Ph8WEnKSdcLRvn8hKLdNUylZzlfH2OrxZXdvCuhfd+XyjfFcdAoqStDctfYbDQQVOqWGqdHG1VEvoNeyR+EsLuiMD07PGfwkM7r/selwPXIfbCDSkFZDyULOiidw+egYNXbjljbFrZl0HkH8eEkP9cs4PotTxWSodajUMjvxXywBV/W1Abhy+i19To0hoNR31sEocV0Yn/WpYqKZJjlXebo1onP1HOmBWJKu194VjHXfgnaRslxmNj58oKJ0bck+zLFe7xx08SbxVbNkKXDT8IUdg/JJfAs0spUboU3l08BVF7OA4pGpkpaSY50GfC0PxKyAsOkGikkFjHurXh4uONRmMGSOwoSLkfK0YysbB2cQWoq7Zf9i3qj+iD3kdXYXef8Qj7/YDcLGORsgRd0a2ND15kZEmSOfn1fLj5NzF5RXL0IzmGK3h18XqheoqKrunbpVhGpsXEmzrm2Es30X7pdDjV98hNesbbV1ZSlCE+aTKRrZ1HigJAnkk8vnLLxFlLlbUTw8hEGGcUgSu3aSorxG6C73mTfM0a+OTGbXx0aq3IKCQDitoXvvWgSJikf6ylFqWscO8ghcFXA9kTYePiAO9P3peVlOv7NVYOiVaMlCPpRmemLxY1jDSL7kjc2XfKlAUoICkuYV+1oolk88n5fDVERgJ8UBV9G0jW5AyE9c5fpxU3J/UjKGHGXw9Dtf9pgYzEZKgtLITAKzOR4iJq3ynppq0dyuHEhHk4OHy65Ig7+04ph4QpRlLOkwTBZPLBwZ/RduEkcVvi4ZkrFQ05OflKfeZgfLIUUEVj/ZIYAbCty0jRaDkPOTZmrmRe8lY+mA0tPsbt3w/i/NwVuUp8/wmm1S4SBkP6/WPnqQ0LPVRGEC8hVDEy108MBtTu0xFb2g3B/k8my0oR5JtxV/XyRIqLuOthModkHJMFUYBihmXcBM1eLg/g87jTogwICzKC6oDCRYtCfPBtPY/lNZwbeqLn3qVoGzjZ3FUJSS4sIWeNE17rtEdxMnhhLeN4TcG5mUvL8YaKC5fGXpJ8yGGZrOimQbOXyXePL4eIa4va3j1A/lhynoREiCeUNqN2hSFo5lKpMaSDx8d/J0yqXK2qih5EZBltM8kfnFh1ZG1ii1PaqTwuL1wjHQJHbryhUU+DitVTmjOjLe2GSt1MT0gS2YNKABOSj3aIkPXXRVba83uBdk2q0MUbjR0oSfL60o0iuZjhsBb6djBT3Dijl3g4OXEeHpy+LGO5hqP65bIPgwFHRs0skMPmB0693Fo3gceHHdH/4hZ8ot8tfWrEjiMycngTHBs79zkNpNdF7T6OKwvXiA777pKp5oeZRGbFyB1KTWFc5mRmITMpVboFugBxa90f7klR9/8y2C8IbJvazJ8ok2dqpZQhN7cdTBlF6uTrIuV+7C1F3yEf5lzUvWd7aa4Pfz5DOYyd99ZCJUnGCTNt9NHzUtzJOZniX1WSVMB4Y5dBlU7ZN/C6YwNzSZJ00q5qBYnpmt0CTAPflyVJc4F4HkuYonPq1++WoO65dxlaz5sgZSDp7kO7Pf0msIcrVEF6GcysQtTfwEDauH/w5BgayPaNhIUK+kb/gdI0xF8PNU84tMWEPGRPBw2/HMtEQ83EvXsAMpJTcXn+anExUjriVcYEjME7+09JzFAt9+jTAbe3HRZW9OjcdbT+QVssC8/PWX7j1KQFskmB22a4ZYZtHMeHZVwd8UQfpTTZi7XQjypqFvIRDAaXp6FRiLtWEVcWrZM2y7xLD5q1zBsqVXDLGaO9ihoX0PXZbyqC1uWFa+HeI0BCoWQZyqNFIuf87OU3OQfhG/aqLBOs34aqFSWzhqzZqdwfGcG0l0+Q5wa10HM8Lb7MVWOrRHrGm+HY7INDv8DVJ3cBg2Yu9d7dVxtpyMlJKuwOyVHpDQ5e7hI7Hr07IGr3CSngRZURxuDeARMjFAM1H3ehyC0NNh+arZurjBTijByWG6e00Ke80hCWr7mpSBpeV0cp7Nu7fpaHlcgQ9uiqaPtqld76EHZz20GVlCTDLN9pzVzhpRwMMWszdzAhGnKllAKHsAW5GgcPt/iCA85j476TTQkkBi/TLiajFdXb19k7YGJYRmIKp2J483G6gSFTQpdXCfAyH+w0HjtQHnCVds0lPwQsmoyUB7GKgaEARrzRxgi+J2k/98+f8PzPRKmBzaaMEFLOnVXc2pJ7NuPGiKkjE5wbaDygUhUqrfxlY8TMpfbh2w+bNkbQGBZ4CtCV2zaVwRCHQX7fj8eRL2bKWPC1N0bkt8WFRFhR2Jp8OVgmvFcXrRfpImLXUVHaKFi96RYXQvbhOZRDqzljxZg2C76W89FVqTaY4c22uBS0WYkgk6GkofSHbKMcvd1lFmJV1k4myq8DJiPGGNF43EBpFB5fuSXn5QSaXFq/YbdyeLE3K6mLOkALfbBxlCAxqozS6K40jqDswTrYePxgvEjPQN+zG+A3d5y4L6VLdu75QqUynYMdCNskKgn1RvSR1by65Pdpa+m2zAlmBoYaXbRIA1HckbgWesrxPsoojB3/vgETxThlBSgrcmeWc+M6ouix1SId9P9uvKR928quYvx7vy8Q+VFgMKDpxNzmmvQx+vgFRO4+gT9DIlChRUMhDodGfPvyhon1xj07xdpXRxRbktRCT1VvkLEtW/giM8uFN0Zw0x/FKIIyB/fWcA8eizZjKTUmXjp3bjp8/iQRhuz/7NigPMJOh4TB0buWKOrUm9bU7yHuyQGREXHGOph7ob9757IudyvMNGOpybORQrJuBSfRbmIvhcgGhyuBayW+euxcIjd9fs5yIe1E5YBm4pJMWpd+XCUxyemY2YCVsiM77qla6AslHv+V7dlUF6jlslHm6rI14miQ2u7FH1aZdnVxxdjW/V3bs1V4C/h/vdEe+eD/4n+Z+DdbeaeVD0bv+wAAAABJRU5ErkJggg==" alt="고려사이버대학교 엠블럼" width="46" height="45">
         <h1>2026 고려사이버대학교 · 주제별 이수 현황</h1>
       </div>
       <div class="sub">신청 주제(소속 강의)별로 학생의 콘텐츠 학습 완료·이수 여부를 확인합니다.</div>
@@ -195,7 +204,7 @@
       <div class="update-info" id="updateInfo">
         <span class="dot"></span><b>불러오는 중…</b>
       </div>
-      <button class="btn btn-line" id="refreshBtn" onclick="loadFromSheet(true)">
+      <button class="btn btn-line" id="refreshBtn" onclick="loadData(true)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
           stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/>
           <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
@@ -205,11 +214,12 @@
   </header>
 
   <div id="errSlot"></div>
+  <div class="semseg" id="semseg"></div>
   <div class="subjects" id="subjects"></div>
 
   <div id="main">
-    <div class="state"><div class="spinner"></div><div class="big">구글 시트에서 데이터를 불러오는 중입니다</div>
-      <div>6개 주제를 읽어오고 있어요.</div></div>
+    <div class="state"><div class="spinner"></div><div class="big">데이터를 불러오는 중입니다</div>
+      <div>학기별 현황을 읽어오고 있어요.</div></div>
   </div>
 
   <div class="legend">
@@ -223,32 +233,55 @@
 
 <script>
 /* ============================================================
-   설정 — 구글 시트(웹에 게시) CSV export
+   설정
+   ------------------------------------------------------------
+   · 데이터 출처(SOURCES)만 수정하면 소스를 바꿀 수 있습니다.
+   · 학기는 '강의명'의 [2026-2] 같은 접두사로 자동 분류됩니다.
+     접두사가 없으면 2026-1(기존 1학기 데이터)로 간주합니다.
    ============================================================ */
-const SHEET_PUB_BASE =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vSY-Pgc1Z3hk22RLg4EUDEJ7d08ssEIhatZZBWQ8M0zQDeekmsFTsQvhjpQvheW1p2hXMUnd9T-o3fk/pub";
-const SUBJECTS = [
-  { name:"미적분_(1) 수열의 극한",     gid:"0" },
-  { name:"미적분_(2) 미분",           gid:"1647752479" },
-  { name:"미적분_(3) 적분",           gid:"1058896394" },
-  { name:"확률과 통계_(1) 경우의 수",  gid:"430981935" },
-  { name:"확률과 통계_(2) 확률",       gid:"1598978244" },
-  { name:"확률과 통계_(3) 통계",       gid:"2083664398" },
+const SOURCES = [
+  // 2026학년도 1학기 — 기존 구글 시트(웹에 게시), 탭 6개
+  {
+    label: "구글 시트 (1학기)",
+    base:  "https://docs.google.com/spreadsheets/d/e/2PACX-1vSY-Pgc1Z3hk22RLg4EUDEJ7d08ssEIhatZZBWQ8M0zQDeekmsFTsQvhjpQvheW1p2hXMUnd9T-o3fk/pub",
+    gids:  ["0","1647752479","1058896394","430981935","1598978244","2083664398"],
+  },
+
+  // 2026학년도 2학기 — 바이브코딩DB 연결 후 아래 주석을 풀어 채우세요.
+  //  (A) 1학기와 같은 '웹에 게시된 구글 시트' 형태라면:
+  //   { label:"구글 시트 (2학기)", base:"https://docs.google.com/.../pub", gids:["gidA","gidB", ...] },
+  //  (B) CSV를 주는 엔드포인트(바이브코딩DB) 하나라면:
+  //   { label:"바이브코딩DB (2학기)", url:"https://.../export?semester=2026-2&format=csv" },
 ];
+
+const SEMESTERS = [
+  { id:"2026-1", label:"2026년 1학기" },
+  { id:"2026-2", label:"2026년 2학기" },
+];
+const DEFAULT_SEMESTER = "2026-2";
+
+/* 주제(강의) 표시 순서 — 목록에 없는 주제는 뒤에 가나다순으로 */
+const SUBJECT_ORDER = [
+  "미적분_(1) 수열의 극한","미적분_(2) 미분","미적분_(3) 적분",
+  "확률과 통계_(1) 경우의 수","확률과 통계_(2) 확률","확률과 통계_(3) 통계",
+];
+
 const OVERVIEW = "__ALL__";
-const csvUrl = gid => `${SHEET_PUB_BASE}?gid=${encodeURIComponent(gid)}&single=true&output=csv&_=${Date.now()}`;
 
 /* 상태 */
-let DATA = {};                  // { subjectName: {students:Map, order:[], maxTs:Date|null} }
-let activeSubject = OVERVIEW;   // OVERVIEW 또는 주제명
+let DATA = {};                        // { "2026-1": {subj:{students,order,maxTs}}, "2026-2": {...} }
+let activeSemester = DEFAULT_SEMESTER;
+let activeSubject = OVERVIEW;
 let searchTerm = "", onlyFail = false;
 
 /* ============================================================
-   CSV 파서
+   CSV/TSV 파서 (구분자 자동 감지)
    ============================================================ */
-function parseCSV(text){
-  const rows=[]; let i=0, field="", row=[], inQ=false;
+function parseDelimited(text){
   text = text.replace(/^﻿/,"").replace(/\r\n/g,"\n").replace(/\r/g,"\n");
+  const firstLine = text.slice(0, text.indexOf("\n")<0?text.length:text.indexOf("\n"));
+  const delim = (firstLine.split("\t").length > firstLine.split(",").length) ? "\t" : ",";
+  const rows=[]; let i=0, field="", row=[], inQ=false;
   while(i<text.length){
     const c=text[i];
     if(inQ){
@@ -256,7 +289,7 @@ function parseCSV(text){
       field+=c;i++;continue;
     } else {
       if(c==='"'){inQ=true;i++;continue;}
-      if(c===','){row.push(field);field="";i++;continue;}
+      if(c===delim){row.push(field);field="";i++;continue;}
       if(c==='\n'){row.push(field);rows.push(row);row=[];field="";i++;continue;}
       field+=c;i++;continue;
     }
@@ -266,37 +299,49 @@ function parseCSV(text){
 }
 
 /* ============================================================
-   판정: 완료 = 개념접속 O 그리고 유형문제 전부 풀이
-   (전체유형문제수 0 = 풀 문제 없음 → 접속만으로 완료)
+   학기/주제 파싱 · 판정
    ============================================================ */
+function semesterOf(course){
+  const m = String(course).match(/\[\s*(\d{4})\s*-\s*(\d)\s*\]/);
+  return m ? `${m[1]}-${m[2]}` : "2026-1";   // 접두사 없으면 기존 1학기
+}
+function cleanSubject(course){
+  return String(course).replace(/\[[^\]]*\]\s*/, "").trim();
+}
+
+/* 완료 = 개념접속 O 그리고 유형문제 전부 풀이
+   (전체유형문제수 0 = 풀 문제 없음 → 접속만으로 완료) */
 function isDone(rec){
   if(!rec) return false;
   if(rec.access !== "O") return false;
   return rec.total > 0 ? rec.solved >= rec.total : true;
 }
 
-/* 학생 식별 키: 학번이 있으면 (이름+학번)으로 구분(동명이인 분리),
-   학번이 없으면 이름으로. → 명수는 학번 기준으로 집계됨 */
+/* 학생 식별 키: 학번이 있으면 (이름+학번)으로 구분(동명이인 분리) */
 function studentKey(name, sid){ return sid ? name + " ## " + sid : name; }
 
 function ingestRows(rows){
   if(!rows || rows.length<2) return;
   const h = rows[0].map(x=>String(x).trim());
-  const ix = n => h.indexOf(n);
-  const iName=ix("이름"), iSid=ix("학번"), iSubj=ix("소속강의"), iCont=ix("콘텐츠"),
+  const ix = (...names)=>{ for(const n of names){ const k=h.indexOf(n); if(k>=0) return k; } return -1; };
+  const iName=ix("이름"), iSid=ix("학번"),
+        iSubj=ix("강의명","소속강의"), iCont=ix("콘텐츠"),
         iAcc=ix("개념접속여부"), iSolv=ix("유형푼문제수"), iTot=ix("전체유형문제수"),
         iAccTs=ix("개념접속시각"), iLastTs=ix("CHECK_마지막푼날짜");
   if(iName<0||iSubj<0||iCont<0) return;
 
-  const orderHint = {};
+  const orderHint = {};   // key: "sem\u0000subj" -> { studentName -> [contents] }
   for(let r=1;r<rows.length;r++){
     const row=rows[r]; if(!row || !row[iName]) continue;
-    const subj=(row[iSubj]||"").trim(); if(!subj) continue;
+    const courseRaw=(row[iSubj]||"").trim(); if(!courseRaw) continue;
     const name=(row[iName]||"").trim();
     const cont=(row[iCont]||"").trim(); if(!cont) continue;
+    const sem=semesterOf(courseRaw);
+    const subj=cleanSubject(courseRaw); if(!subj) continue;
 
-    if(!DATA[subj]) DATA[subj]={students:new Map(), order:[], maxTs:null};
-    const S=DATA[subj];
+    if(!DATA[sem]) DATA[sem]={};
+    if(!DATA[sem][subj]) DATA[sem][subj]={students:new Map(), order:[], maxTs:null};
+    const S=DATA[sem][subj];
     const sid=(row[iSid]||"").trim();
     const key=studentKey(name, sid);
     if(!S.students.has(key)) S.students.set(key,{name, sid, c:new Map()});
@@ -306,16 +351,18 @@ function ingestRows(rows){
     const prev=st.c.get(cont);
     if(!prev || (isDone(rec) && !isDone(prev)) || (rec.solved>prev.solved)) st.c.set(cont, rec);
 
-    for(const t of [row[iAccTs], row[iLastTs]]){
+    for(const t of [iAccTs>=0?row[iAccTs]:"", iLastTs>=0?row[iLastTs]:""]){
       if(t){ const d=new Date(t); if(!isNaN(d) && (!S.maxTs || d>S.maxTs)) S.maxTs=d; }
     }
-    orderHint[subj]=orderHint[subj]||{};
-    (orderHint[subj][name]=orderHint[subj][name]||[]);
-    if(!orderHint[subj][name].includes(cont)) orderHint[subj][name].push(cont);
+    const ok=sem+"\u0000"+subj;
+    orderHint[ok]=orderHint[ok]||{};
+    (orderHint[ok][name]=orderHint[ok][name]||[]);
+    if(!orderHint[ok][name].includes(cont)) orderHint[ok][name].push(cont);
   }
-  for(const subj of Object.keys(orderHint)){
-    const S=DATA[subj]; let base=[];
-    for(const arr of Object.values(orderHint[subj])) if(arr.length>base.length) base=arr.slice();
+  for(const ok of Object.keys(orderHint)){
+    const [sem,subj]=ok.split("\u0000"); const S=DATA[sem][subj];
+    let base=[];
+    for(const arr of Object.values(orderHint[ok])) if(arr.length>base.length) base=arr.slice();
     const all=new Set(); for(const st of S.students.values()) for(const c of st.c.keys()) all.add(c);
     const order=base.slice(); for(const c of all) if(!order.includes(c)) order.push(c);
     S.order=order;
@@ -323,56 +370,77 @@ function ingestRows(rows){
 }
 
 /* ============================================================
-   구글 시트 로드 (재시도 포함)
+   로드 (재시도 포함)
    ============================================================ */
-async function fetchCsvWithRetry(gid, tries){
+function bust(url){ return url + (url.includes("?")?"&":"?") + "_=" + Date.now(); }
+function gsheetCsvUrl(base, gid){
+  return `${base}?gid=${encodeURIComponent(gid)}&single=true&output=csv&_=${Date.now()}`;
+}
+async function fetchTextWithRetry(url, tries){
   let lastErr;
   for(let a=0;a<tries;a++){
-    try{
-      const res=await fetch(csvUrl(gid), {cache:"no-store"});
-      if(res.ok) return await res.text();
+    try{ const res=await fetch(url, {cache:"no-store"}); if(res.ok) return await res.text();
       lastErr=new Error("HTTP "+res.status);
     }catch(e){ lastErr=e; }
   }
   throw lastErr || new Error("fetch failed");
 }
 
-async function loadFromSheet(isRefresh){
+async function loadData(isRefresh){
   DATA={};
   setUpdateInfo(null, "불러오는 중…", true);
   document.getElementById("refreshBtn").disabled=true;
-  markChipsLoading();
+  renderSemesters(); markChipsLoading();
   if(isRefresh) showLoadingMain();
 
-  let failed=[];
-  await Promise.all(SUBJECTS.map(async s=>{
-    try{ ingestRows(parseCSV(await fetchCsvWithRetry(s.gid, 3))); }
-    catch(e){ failed.push(s.name); }
-  }));
-
+  const jobs=[]; const failed=[];
+  for(const src of SOURCES){
+    if(src.gids){
+      for(const gid of src.gids){
+        jobs.push((async()=>{ try{ ingestRows(parseDelimited(await fetchTextWithRetry(gsheetCsvUrl(src.base,gid),3))); }
+          catch(e){ failed.push(src.label); } })());
+      }
+    } else if(src.url){
+      jobs.push((async()=>{ try{ ingestRows(parseDelimited(await fetchTextWithRetry(bust(src.url),3))); }
+        catch(e){ failed.push(src.label); } })());
+    }
+  }
+  await Promise.all(jobs);
   document.getElementById("refreshBtn").disabled=false;
 
-  if(Object.keys(DATA).length===0){
+  const anyData = SEMESTERS.some(s=>DATA[s.id] && Object.keys(DATA[s.id]).length);
+  if(!anyData){
     showSheetError();
     setUpdateInfo(null, "불러오기 실패", false);
     document.getElementById("subjects").innerHTML="";
     document.getElementById("main").innerHTML="";
+    renderSemesters();
     return;
   }
   clearError();
-  if(failed.length) showError(`일부 주제를 불러오지 못했습니다: <b>${failed.join(", ")}</b>. 새로고침을 눌러 다시 시도하세요.`);
+  if(failed.length) showError(`일부 데이터를 불러오지 못했습니다: <b>${[...new Set(failed)].join(", ")}</b>. 새로고침으로 다시 시도하세요.`);
 
-  let maxTs=null; for(const s of Object.values(DATA)) if(s.maxTs && (!maxTs||s.maxTs>maxTs)) maxTs=s.maxTs;
-  setUpdateInfo(maxTs, "구글 시트 (실시간)", true);
+  setUpdateInfo(semesterMaxTs(activeSemester), "구글 시트 (실시간)", true);
 
-  if(activeSubject!==OVERVIEW && !DATA[activeSubject]) activeSubject=OVERVIEW;
-  renderSubjects();
-  renderMain();
+  if(activeSubject!==OVERVIEW && !(DATA[activeSemester]||{})[activeSubject]) activeSubject=OVERVIEW;
+  renderSemesters(); renderSubjects(); renderMain();
 }
 
-function presentSubjects(){
-  return SUBJECTS.map(s=>s.name).filter(n=>DATA[n])
-    .concat(Object.keys(DATA).filter(n=>!SUBJECTS.some(s=>s.name===n)));
+function semesterMaxTs(sem){
+  let m=null; const d=DATA[sem]||{};
+  for(const S of Object.values(d)) if(S.maxTs && (!m||S.maxTs>m)) m=S.maxTs;
+  return m;
+}
+function presentSubjects(sem){
+  const d=DATA[sem]||{};
+  const inOrder=SUBJECT_ORDER.filter(n=>d[n]);
+  const extra=Object.keys(d).filter(n=>!SUBJECT_ORDER.includes(n)).sort((a,b)=>a.localeCompare(b,"ko"));
+  return [...inOrder, ...extra];
+}
+function uniqStudents(sem){
+  const set=new Set(); const d=DATA[sem]||{};
+  for(const S of Object.values(d)) for(const st of S.students.values()) set.add(studentKey(st.name, st.sid));
+  return set.size;
 }
 
 /* ============================================================
@@ -381,21 +449,37 @@ function presentSubjects(){
 function subjectLabel(name){ return name.replace(/_/g," "); }
 function rateColor(r){ return r>=80 ? "var(--fill-success)" : r>=50 ? "var(--fill-warning)" : "var(--fill-danger)"; }
 
+function renderSemesters(){
+  const box=document.getElementById("semseg");
+  box.innerHTML = SEMESTERS.map(s=>{
+    const has = DATA[s.id] && Object.keys(DATA[s.id]).length;
+    const cnt = has ? ` <span class="scnt">${uniqStudents(s.id)}</span>` : "";
+    return `<button class="${s.id===activeSemester?'active':''}" onclick="selectSemester('${s.id}')">${s.label}${cnt}</button>`;
+  }).join("");
+}
+function selectSemester(sem){
+  if(sem===activeSemester) return;
+  activeSemester=sem; activeSubject=OVERVIEW; searchTerm=""; onlyFail=false;
+  setUpdateInfo(semesterMaxTs(sem), "구글 시트 (실시간)", true);
+  renderSemesters(); renderSubjects(); renderMain();
+}
+
 function renderSubjects(){
   const box=document.getElementById("subjects");
+  const subs=presentSubjects(activeSemester);
+  if(subs.length===0){ box.innerHTML=""; return; }
   const chips=[`<button class="chip overview${activeSubject===OVERVIEW?" active":""}" onclick="selectSubject('${OVERVIEW}')">📊 종합 현황</button>`];
-  for(const name of presentSubjects()){
+  for(const name of subs){
     const on = name===activeSubject ? " active":"";
     chips.push(`<button class="chip${on}" onclick="selectSubject('${name.replace(/'/g,"\\'")}')">
-      ${subjectLabel(name)}<span class="cnt">${DATA[name].students.size}</span></button>`);
+      ${subjectLabel(name)}<span class="cnt">${DATA[activeSemester][name].students.size}</span></button>`);
   }
   box.innerHTML = chips.join("");
 }
 function markChipsLoading(){
   const box=document.getElementById("subjects");
-  if(box.children.length===0)
-    box.innerHTML = ['📊 종합 현황', ...SUBJECTS.map(s=>subjectLabel(s.name))]
-      .map(t=>`<button class="chip loading">${t}</button>`).join("");
+  box.innerHTML = ['📊 종합 현황','불러오는 중…']
+    .map(t=>`<button class="chip loading">${t}</button>`).join("");
 }
 function selectSubject(name){ activeSubject=name; searchTerm=""; onlyFail=false; renderSubjects(); renderMain(); }
 
@@ -411,15 +495,26 @@ function computeRows(S){
 }
 
 function renderMain(){
+  if(presentSubjects(activeSemester).length===0){ showEmptySemester(); return; }
   if(activeSubject===OVERVIEW) renderOverview();
   else renderSubjectDetail();
+}
+
+function showEmptySemester(){
+  const other = activeSemester==="2026-2" ? "2026-1" : "2026-2";
+  const otherHas = DATA[other] && Object.keys(DATA[other]).length;
+  const lbl = (SEMESTERS.find(s=>s.id===activeSemester)||{}).label || activeSemester;
+  document.getElementById("main").innerHTML =
+    `<div class="state"><div class="big">${lbl} 데이터가 아직 없습니다</div>
+      <div>바이브코딩DB가 연결되면 이 학기 현황이 표시됩니다.${
+        otherHas ? " 지금은 위 토글에서 다른 학기를 선택해 확인할 수 있어요." : ""}</div></div>`;
 }
 
 /* ---------- 종합 현황 ---------- */
 function renderOverview(){
   const subs=[]; const uniq=new Set(); let totalPass=0, totalSeats=0;
-  for(const name of presentSubjects()){
-    const S=DATA[name]; const rows=computeRows(S);
+  for(const name of presentSubjects(activeSemester)){
+    const S=DATA[activeSemester][name]; const rows=computeRows(S);
     const pass=rows.filter(r=>r.pass).length;
     const avgProg = rows.length ? rows.reduce((a,r)=>a+(r.total?r.doneCount/r.total:0),0)/rows.length*100 : 0;
     subs.push({ name, total:rows.length, pass, fail:rows.length-pass,
@@ -448,6 +543,7 @@ function renderOverview(){
       <td>${s.avgProg.toFixed(0)}%</td>
     </tr>`).join("");
 
+  const semLbl = (SEMESTERS.find(s=>s.id===activeSemester)||{}).label || "";
   document.getElementById("main").innerHTML = `
     <div class="cards">
       <div class="card"><div class="lbl">신청 주제</div><div class="val">${subs.length}<small> 개</small></div></div>
@@ -457,7 +553,7 @@ function renderOverview(){
     </div>
 
     <div class="ov-section">
-      <h2>주제별 이수율</h2>
+      <h2>${semLbl} · 주제별 이수율</h2>
       <div class="desc">막대 또는 표의 행을 클릭하면 해당 주제의 상세 명단으로 이동합니다.</div>
       ${bars}
     </div>
@@ -476,7 +572,7 @@ function renderOverview(){
 /* ---------- 주제 상세 ---------- */
 function renderSubjectDetail(){
   const main=document.getElementById("main");
-  const S=DATA[activeSubject];
+  const S=DATA[activeSemester][activeSubject];
   if(!S){ main.innerHTML=`<div class="state"><div class="big">데이터가 없습니다</div></div>`; return; }
 
   const allRows=computeRows(S).sort((a,b)=> a.name.localeCompare(b.name,"ko"));
@@ -554,7 +650,7 @@ function tableHTML(S, rows){
    다운로드
    ============================================================ */
 function currentExportRows(){
-  const S=DATA[activeSubject]; if(!S) return null;
+  const S=DATA[activeSemester] && DATA[activeSemester][activeSubject]; if(!S) return null;
   let rows=computeRows(S).sort((a,b)=>a.name.localeCompare(b.name,"ko"));
   if(onlyFail) rows=rows.filter(r=>!r.pass);
   if(searchTerm){ const q=searchTerm.toLowerCase();
@@ -564,8 +660,10 @@ function currentExportRows(){
   for(const r of rows) aoa.push([r.name, r.sid||"", r.pass?"이수":"미이수", ...r.cells.map(x=>x.done?"완료":"미완료")]);
   return {aoa, header};
 }
-function safeName(){ return subjectLabel(activeSubject).replace(/[\\/:*?"<>|]/g,"").trim(); }
-
+function safeName(){
+  const sem=(activeSemester||"").replace("-","_");
+  return (sem+"_"+subjectLabel(activeSubject)).replace(/[\\/:*?"<>|]/g,"").trim();
+}
 function downloadCSV(){
   const ex=currentExportRows(); if(!ex) return;
   const csv=ex.aoa.map(row=>row.map(v=>{
@@ -610,18 +708,18 @@ function clearError(){ document.getElementById("errSlot").innerHTML=""; }
 function showSheetError(){
   const isFile = location.protocol==="file:";
   if(isFile){
-    showError(`구글 시트 데이터를 불러오지 못했습니다.<br>
-      이 파일을 <b>더블클릭(내 컴퓨터에서 직접 열기)</b>하면 브라우저 보안 정책상 외부(구글) 데이터를 읽을 수 없습니다.<br>
+    showError(`데이터를 불러오지 못했습니다.<br>
+      이 파일을 <b>더블클릭(내 컴퓨터에서 직접 열기)</b>하면 브라우저 보안 정책상 외부 데이터를 읽을 수 없습니다.<br>
       → 이 파일을 <b>웹에 올린 뒤 그 링크(http/https)로 접속</b>하면 정상 동작합니다.`);
   } else {
-    showError(`구글 시트에서 데이터를 불러오지 못했습니다.<br>
-      · 인터넷 연결 또는 시트의 <b>웹 게시</b> 상태를 확인해 주세요.<br>
+    showError(`데이터를 불러오지 못했습니다.<br>
+      · 인터넷 연결 또는 데이터 소스의 <b>게시/공개</b> 상태를 확인해 주세요.<br>
       · 잠시 후 <b>새로고침</b>을 눌러 다시 시도해 주세요.`);
   }
 }
 
 /* 시작 */
-loadFromSheet(false);
+loadData(false);
 </script>
 </body>
 </html>
